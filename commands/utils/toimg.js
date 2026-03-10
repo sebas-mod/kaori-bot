@@ -15,19 +15,17 @@ export default {
             const isAnimated = q.isAnimated || q.msg?.isAnimated
 
             if (isAnimated) {
-                // Conversión de Sticker Animado a Video
+                // Llamamos a nuestra nueva función
                 const out = await webp2mp4(media)
                 await client.sendMessage(m.chat, { video: { url: out }, caption: 'ꕥ *Aquí tienes tu video ฅ^•ﻌ•^ฅ*' }, { quoted: m })
             } else {
-                // Conversión de Sticker Estático a Imagen
                 await client.sendMessage(m.chat, { image: media, caption: 'ꕥ *Aquí tienes tu imagen ฅ^•ﻌ•^ฅ*' }, { quoted: m })
             }
             await m.react('✔️')
-            
         } catch (e) {
             console.error(e)
             await m.react('✖️')
-            client.reply(m.chat, `《✧》 Ocurrió un error: ${e.message}`, m)
+            client.reply(m.chat, `《✧》 Error: No se pudo convertir este sticker animado.`, m)
         }
     }
 }
