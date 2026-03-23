@@ -44,6 +44,7 @@ export default {
         nsfw: ['nsfw', '+18'],
         profile: ['profile', 'perfil'],
         sockets: ['sockets', 'bots'],
+        stickers: ['stickers', 'sticker'],
         utils: ['utils', 'utilidades', 'herramientas']
       };
       const input = normalize(args[0] || '');
