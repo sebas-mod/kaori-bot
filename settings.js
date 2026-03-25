@@ -2,21 +2,21 @@ import fs from 'fs';
 import { watchFile, unwatchFile } from 'fs'
 import { fileURLToPath } from 'url'
 
-global.owner = ['573196588149', '5492916450307', '5216671548329', '573247662531', '51921826291', '50493732693']
+global.owner = ['5491138403093']
 global.botNumber = ''
 
 global.sessionName = 'Sessions/Owner'
-global.version = '^2.0 - Latest'
-global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ ⁱᵃᵐ|𝔇ĕ𝐬†𝓻⊙γ𒆜"
+global.version = '^1.0 - Latest'
+global.dev = "© p̶o̶w̶e̶r̶e̶d̶ ̶b̶y̶ ̶:̶ ̶s̶e̶b̶a̶s̶ ̶m̶d̶"
 global.links = {
 api: 'https://api.stellarwa.xyz',
-channel: "https://whatsapp.com/channel/0029Vb64nWqLo4hb8cuxe23n",
-github: "https://github.com/iamDestroy/YukiBot-MD",
-gmail: "thekingdestroy507@gmail.com"
+channel: "",
+github: "",
+gmail: ""
 }
 global.my = {
-ch: '120363401404146384@newsletter',
-name: 'ೃ࿔ ყµҡเ ωαɓσƭร - σƒƒเ૮เαℓ ૮ɦαɳɳεℓ .ೃ࿐',
+ch: '',
+name: 'K̴A̴O̴R̴I̴ ̴B̴O̴T̴',
 }
 
 global.mess = {
