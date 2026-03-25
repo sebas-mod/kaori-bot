@@ -99,7 +99,7 @@ export default {
               },
               externalAdReply: {
                 title: botname,
-                body: `${namebot}, mᥲძᥱ ᥕі𝗍һ ᑲᥡ ⁱᵃᵐ|𝔇ĕ𝐬†𝓻⊙γ𒆜`,
+                body: `${namebot}, p̶o̶w̶e̶r̶e̶d̶ ̶b̶y̶ ̶:̶ ̶s̶e̶b̶a̶s̶ ̶m̶d̶`,
                 showAdAttribution: false,
                 thumbnailUrl: banner,
                 mediaType: 1,
