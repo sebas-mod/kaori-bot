@@ -233,7 +233,7 @@ cd && cd YukiBot-MD && rm -rf Sessions/Owner && npm start
 ---
 
 ### 🦋 Colaboradores
-<a href="https://api.yuki-wabot.my.id>
+<a href="https://api.yuki-wabot.my.id">
   <img src="https://contrib.rocks/image?repo=iamDestroy/YukiBot-MD" />
 </a>
 
