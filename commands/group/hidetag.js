@@ -1,5 +1,5 @@
 export default {
-  command: ['hidetag', 'tag'],
+  command: ['hidetag', 'tag','n'],
   category: 'grupo',
   isAdmin: true,
   run: async (client, m, args, usedPrefix, command) => {
