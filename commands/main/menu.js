@@ -106,7 +106,7 @@ const buffer = await res.buffer()
 
 await client.sendMessage(m.chat, {
   audio: buffer,
-  mimetype: 'audio/mp4',
+  mimetype: 'audio/ogg; codecs=opus'
   ptt: true
 }, { quoted: m })
    } catch (e) {
