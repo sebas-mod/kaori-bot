@@ -100,13 +100,14 @@ export default {
     }
   }
 },{ quoted: m });
+
 // 🎧 AUDIO DEL MENU
 const res = await fetch('https://imagenes-one.vercel.app/hola-bb.mp3')
 const buffer = await res.buffer()
 
 await client.sendMessage(m.chat, {
   audio: buffer,
-  mimetype: 'audio/ogg; codecs=opus'
+  mimetype: 'audio/ogg; codecs=opus',
   ptt: true
 }, { quoted: m })
    } catch (e) {
