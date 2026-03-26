@@ -87,27 +87,19 @@ export default {
                 newsletterName: canalName
               }
             }
-          } : {
-            text: menu,
-            contextInfo: {
-              mentionedJid: [m.sender],
-              isForwarded: true,
-              forwardedNewsletterMessageInfo: {
-                newsletterJid: canalId,
-                serverMessageId: '',
-                newsletterName: canalName
-              },
-              externalAdReply: {
-                title: botname,
-                body: `${namebot}, p̶o̶w̶e̶r̶e̶d̶ ̶b̶y̶ ̶:̶ ̶s̶e̶b̶a̶s̶ ̶m̶d̶`,
-                showAdAttribution: false,
-                thumbnailUrl: banner,
-                mediaType: 1,
-                previewType: 0,
-                renderLargerThumbnail: true
-              }
-            }
-          }, { quoted: m });
+  } : {
+  image: { url: banner },
+  caption: menu,
+  contextInfo: {
+    mentionedJid: [m.sender],
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: canalId,
+      serverMessageId: '',
+      newsletterName: canalName
+    }
+  }
+},{ quoted: m });
     } catch (e) {
       await m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*. Please try again or contact support if the issue persists.\n> [Error: *${e.message}*]`)
     }
