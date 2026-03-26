@@ -100,7 +100,18 @@ export default {
     }
   }
 },{ quoted: m });
-    } catch (e) {
+
+},{ quoted: m });
+// 🎧 AUDIO DEL MENU
+const res = await fetch('https://imagenes-one.vercel.app/hola-bb.mp3')
+const buffer = await res.buffer()
+
+await client.sendMessage(m.chat, {
+  audio: buffer,
+  mimetype: 'audio/mp4',
+  ptt: true
+}, { quoted: m })
+   } catch (e) {
       await m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*. Please try again or contact support if the issue persists.\n> [Error: *${e.message}*]`)
     }
   }
