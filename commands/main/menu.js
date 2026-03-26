@@ -102,14 +102,13 @@ export default {
 },{ quoted: m });
 
 // 🎧 AUDIO DEL MENU
-const res = await fetch('https://imagenes-one.vercel.app/hola-bb.mp3')
-const buffer = await res.buffer()
-
-await client.sendMessage(m.chat, {
-  audio: buffer,
-  mimetype: 'audio/ogg; codecs=opus',
-  ptt: true
-}, { quoted: m })
+setTimeout(async () => {
+  await client.sendMessage(m.chat, {
+    audio: { url: 'https://imagenes-one.vercel.app/hola-bb.opus' },
+    mimetype: 'audio/ogg; codecs=opus',
+    ptt: true
+  }, { quoted: m })
+}, 1000)
    } catch (e) {
       await m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*. Please try again or contact support if the issue persists.\n> [Error: *${e.message}*]`)
     }
