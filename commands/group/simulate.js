@@ -5,9 +5,9 @@ let handler = {
   run: async (client, m, args, usedPrefix, command, { isOwner }) => {
 
     // 🔒 SOLO OWNER
-    if (!isOwner) {
-      return m.reply('❌ Este comando es solo para el owner.')
-    }
+    if (!global.owner.includes(m.sender.split('@')[0])) {
+  return m.reply('❌ Solo el owner puede usar esto.')
+   }
 
     if (!m.isGroup) {
       return m.reply('❌ Solo en grupos.')
