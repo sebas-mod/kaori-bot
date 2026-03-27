@@ -36,14 +36,14 @@ export default async (client, m) => {
               serverMessageId: '0',
               newsletterName: global.db.data.settings[botId].nameid
             },
-            externalAdReply: {
-              title: global.db.data.settings[botId].namebot,
-              body: dev,
-              previewType: 'PHOTO',
-              thumbnailUrl: global.db.data.settings[botId].icon,
-              sourceUrl: global.db.data.settings[botId].link,
-              mediaType: 1,
-              renderLargerThumbnail: false
+         externalAdReply: {
+       title: global.db.data.settings[botId].namebot,
+       body: 'Sistema de bienvenida',
+       previewType: 'PHOTO',
+        thumbnailUrl: global.db.data.settings[botId].icon,
+        sourceUrl: global.db.data.settings[botId].link,
+         mediaType: 1,
+          renderLargerThumbnail: false
             },
             mentionedJid: [jid]
           }
