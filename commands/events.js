@@ -99,15 +99,6 @@ export default async (client, m) => {
             caption, 
             ...fakeContext 
           })
-
-          // 🔊 Audio
-          await client.sendMessage(anu.id, {
-            audio: { url: audioURL },
-            mimetype: 'audio/mpeg',
-            ptt: true
-          })
-        }
-
         // ALERTAS (sin tocar)
         if (anu.action === 'promote' && chat?.alerts && (!primaryBotId || primaryBotId === botId)) {
           const usuario = anu.author
