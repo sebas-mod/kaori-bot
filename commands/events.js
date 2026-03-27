@@ -99,6 +99,7 @@ export default async (client, m) => {
             caption, 
             ...fakeContext 
           })
+        }
         // ALERTAS (sin tocar)
         if (anu.action === 'promote' && chat?.alerts && (!primaryBotId || primaryBotId === botId)) {
           const usuario = anu.author
