@@ -3,8 +3,8 @@ let WAMessageStubType = (await import('@whiskeysockets/baileys')).default
 import chalk from 'chalk'
 
 // 🔥 CONFIGURACIÓN
-const bannerURL = 'https://imagenes-one.vercel.app/banner.jpg' // ← CAMBIA ESTO
-const audioURL = 'https://imagenes-one.vercel.app/bienvenido-wey.opus' // ← CAMBIA ESTO
+const bannerURL = 'https://imagenes-one.vercel.app/banner.jpg'
+const audioURL = 'https://imagenes-one.vercel.app/bienvenido-wey.opus'
 
 export default async (client, m) => {
   client.ev.on('group-participants.update', async (anu) => {
@@ -21,7 +21,6 @@ export default async (client, m) => {
       for (const p of anu.participants) {
         const jid = p.phoneNumber
         const phone = p.phoneNumber?.split('@')[0] || jid.split('@')[0]
-        const pp = await client.profilePictureUrl(jid, 'image').catch(_ => 'https://cdn.yuki-wabot.my.id/files/2PVh.jpeg')       
 
         const mensajes = {
           add: chat.sWelcome ? `\n┊➤ ${chat.sWelcome.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : '',
@@ -40,8 +39,6 @@ export default async (client, m) => {
             externalAdReply: {
               title: global.db.data.settings[botId].namebot,
               body: dev,
-              mediaUrl: null,
-              description: null,
               previewType: 'PHOTO',
               thumbnailUrl: global.db.data.settings[botId].icon,
               sourceUrl: global.db.data.settings[botId].link,
@@ -61,7 +58,7 @@ export default async (client, m) => {
 ┊  *Grupo ›* ${metadata.subject}
 ┊┈─────̇─̇─̇─────◯◝
 ┊➤ *Usa /menu para ver los comandos.*
-┊➤ *Ahora somos ${memberCount} miembros.* ${mensajes[anu.action]}
+┊➤ *Ahora somos ${memberCount} miembros.* ${mensajes.add}
 ┊ ︿︿︿︿︿︿︿︿︿︿︿
 ╰─────────────────╯`
 
@@ -72,15 +69,17 @@ export default async (client, m) => {
             ...fakeContext 
           })
 
-          // 🔊 Audio
-          await client.sendMessage(anu.id, {
-            audio: { url: audioURL },
-        mimetype: 'audio/ogg; codecs=opus',
-       ptt: true
-          })
+          // 🔊 Audio (solo welcome)
+          setTimeout(async () => {
+            await client.sendMessage(anu.id, {
+              audio: { url: audioURL },
+              mimetype: 'audio/ogg; codecs=opus',
+              ptt: true
+            })
+          }, 1000)
         }
 
-        // ✨ DESPEDIDA
+        // ✨ DESPEDIDA (SIN AUDIO)
         if ((anu.action === 'remove' || anu.action === 'leave') && chat?.goodbye && (!primaryBotId || primaryBotId === botId)) {
           const caption = `╭┈──̇─̇─̇────̇─̇─̇──◯◝
 ┊「 *Hasta pronto (⁠╥⁠﹏⁠╥⁠)* 」
@@ -89,26 +88,32 @@ export default async (client, m) => {
 ┊  *Grupo ›* ${metadata.subject}
 ┊┈─────̇─̇─̇─────◯◝
 ┊➤ *Ojalá que vuelva pronto.*
-┊➤ *Ahora somos ${memberCount} miembros.* ${mensajes[anu.action]}
+┊➤ *Ahora somos ${memberCount} miembros.* ${mensajes.remove}
 ┊ ︿︿︿︿︿︿︿︿︿︿︿
 ╰─────────────────╯`
 
-          // 📸 Banner
           await client.sendMessage(anu.id, { 
             image: { url: bannerURL }, 
             caption, 
             ...fakeContext 
           })
         }
-        // ALERTAS (sin tocar)
+
+        // ALERTAS
         if (anu.action === 'promote' && chat?.alerts && (!primaryBotId || primaryBotId === botId)) {
           const usuario = anu.author
-          await client.sendMessage(anu.id, { text: `「✎」 *@${phone}* ha sido promovido a Administrador por *@${usuario.split('@')[0]}.*`, mentions: [jid, usuario, ...groupAdmins.map(v => v.id)] })
+          await client.sendMessage(anu.id, { 
+            text: `「✎」 *@${phone}* ha sido promovido por *@${usuario.split('@')[0]}.*`, 
+            mentions: [jid, usuario, ...groupAdmins.map(v => v.id)] 
+          })
         }
 
         if (anu.action === 'demote' && chat?.alerts && (!primaryBotId || primaryBotId === botId)) {
           const usuario = anu.author
-          await client.sendMessage(anu.id, { text: `「✎」 *@${phone}* ha sido degradado de Administrador por *@${usuario.split('@')[0]}.*`, mentions: [jid, usuario, ...groupAdmins.map(v => v.id)] })
+          await client.sendMessage(anu.id, { 
+            text: `「✎」 *@${phone}* ha sido degradado por *@${usuario.split('@')[0]}.*`, 
+            mentions: [jid, usuario, ...groupAdmins.map(v => v.id)] 
+          })
         }
       }
 
@@ -146,10 +151,10 @@ export default async (client, m) => {
       await client.sendMessage(id, { text: `「✎」 @${phone} cambió la descripción del grupo.`, mentions: [actor, ...groupAdmins.map(v => v.id)] })
     }
     if (m.messageStubType == 25) {
-      await client.sendMessage(id, { text: `「✎」 @${phone} cambió los ajustes del grupo para permitir que ${m.messageStubParameters[0] == 'on' ? 'solo admins' : 'todos'} puedan configurar el grupo.`, mentions: [actor, ...groupAdmins.map(v => v.id)] })
+      await client.sendMessage(id, { text: `「✎」 @${phone} cambió ajustes del grupo.`, mentions: [actor, ...groupAdmins.map(v => v.id)] })
     }
     if (m.messageStubType == 26) {
-      await client.sendMessage(id, { text: `「✎」 @${phone} cambió los ajustes del grupo para permitir que ${m.messageStubParameters[0] === 'on' ? 'solo los administradores puedan enviar mensajes al grupo.' : 'todos los miembros puedan enviar mensajes al grupo.'}`, mentions: [actor, ...groupAdmins.map(v => v.id)] })
+      await client.sendMessage(id, { text: `「✎」 @${phone} cambió permisos de mensajes.`, mentions: [actor, ...groupAdmins.map(v => v.id)] })
     }
   })
 }
