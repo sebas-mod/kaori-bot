@@ -3,8 +3,8 @@ let WAMessageStubType = (await import('@whiskeysockets/baileys')).default
 import chalk from 'chalk'
 
 // 🔥 CONFIGURACIÓN
-const bannerURL = 'https://i.imgur.com/tuBanner.jpg' // ← CAMBIA ESTO
-const audioURL = 'https://files.catbox.moe/xxxxx.mp3' // ← CAMBIA ESTO
+const bannerURL = 'https://imagenes-one.vercel.app/banner.jpg' // ← CAMBIA ESTO
+const audioURL = 'https://imagenes-one.vercel.app/bienvenido-wey.opus' // ← CAMBIA ESTO
 
 export default async (client, m) => {
   client.ev.on('group-participants.update', async (anu) => {
@@ -75,8 +75,8 @@ export default async (client, m) => {
           // 🔊 Audio
           await client.sendMessage(anu.id, {
             audio: { url: audioURL },
-            mimetype: 'audio/mpeg',
-            ptt: true
+        mimetype: 'audio/ogg; codecs=opus',
+       ptt: true
           })
         }
 
