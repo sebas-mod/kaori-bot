@@ -6,6 +6,7 @@ export default {
 
   run: async (client, m, args, usedPrefix) => {
 
+    // ❌ AYUDA
     if (!args[0]) {
       return m.reply(`❌ Debes ingresar los datos
 
@@ -30,7 +31,7 @@ ${usedPrefix}versus mixto 4 23:00 vs clan pro
     }
 
     if (![4, 6, 12].includes(cupos)) {
-      return m.reply('❌ Solo 4, 6 o 12')
+      return m.reply('❌ Solo 4, 6 o 12 jugadores')
     }
 
     if (!hora.includes(':')) {
@@ -89,7 +90,7 @@ function convertirHorarios(horaArg) {
 }
 
 
-// 🔥 LISTA
+// 🔥 LISTA VISUAL
 function generarLista(titulo, tipo, cupos, horarios, creador, jugadores, suplentes) {
 
   let listaJugadores = ''
@@ -125,7 +126,7 @@ ${listaSuplentes}
 }
 
 
-// 🔥 REACCIONES (TOGGLE REAL)
+// 🔥 REACCIONES (TOGGLE REAL SIN BUG)
 export async function before(m, { client }) {
   if (!m.message?.reactionMessage) return
 
@@ -135,6 +136,9 @@ export async function before(m, { client }) {
   if (!data) return
 
   let user = m.sender
+
+  // ⚠️ ignorar si no hay emoji
+  if (!reaction.text) return
 
   let enJugadores = data.jugadores.includes(user)
   let enSuplentes = data.suplentesList.includes(user)
@@ -151,7 +155,7 @@ export async function before(m, { client }) {
         data.jugadores.push(sube)
       }
 
-    } else if (enSuplentes) {
+    } else {
       data.suplentesList = data.suplentesList.filter(u => u !== user)
     }
 
