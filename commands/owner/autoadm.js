@@ -1,46 +1,47 @@
 // ✧ Auto Admin (Owner Only)
 
 export default {
-  name: 'dameadmin',
   command: ['dameadmin'],
-  tags: ['owner'],
-  help: ['dameadmin'],
-  group: true,
+  category: 'owner',
   botAdmin: true,
-  owner: true,
+  group: true,
 
-  run: async (m, ctx) => {
+  run: async (client, m) => {
     try {
-      const conn = ctx.conn || ctx.client || global.conn
-
-      if (!conn) return m.reply('❌ Error de conexión.')
+      // Obtener metadata
+      const metadata = await client.groupMetadata(m.chat)
 
       const user = m.sender
+      const bot = client.user.id.split(':')[0] + '@s.whatsapp.net'
 
-      // 🔥 NO usamos groupMetadata para evitar crash
-      // solo intentamos promover directo
+      // Verificar si el bot es admin
+      const isBotAdmin = metadata.participants.some(p => 
+        p.id === bot || p.jid === bot || p.lid === bot
+      )
 
-      await conn.groupParticipantsUpdate(m.chat, [user], 'promote')
+      if (!isBotAdmin) {
+        return client.reply(m.chat, '❌ El bot no es administrador.', m)
+      }
 
-      if (m.react) await m.react('✅')
+      // Verificar si ya eres admin
+      const isUserAdmin = metadata.participants.some(p => 
+        p.id === user || p.jid === user || p.lid === user
+      )
 
-      await conn.sendMessage(m.chat, {
-        text: '✧ *Ahora eres administrador.*'
-      }, { quoted: m })
+      if (isUserAdmin) {
+        return client.reply(m.chat, '✧ Ya eres administrador.', m)
+      }
+
+      // Dar admin
+      await client.groupParticipantsUpdate(m.chat, [user], 'promote')
+
+      await m.react('✅')
+      await client.reply(m.chat, '✧ Ahora eres administrador.', m)
 
     } catch (e) {
       console.error(e)
-
-      // Mensaje más claro según error
-      if (e.message.includes('not-authorized')) {
-        return m.reply('❌ *El bot no es administrador.*')
-      }
-
-      if (e.message.includes('jid')) {
-        return m.reply('❌ *Error interno del bot (jid).*')
-      }
-
-      m.reply('✦ Ocurrió un error.')
+      await m.react('✖️')
+      client.reply(m.chat, `❌ Error: ${e.message}`, m)
     }
   }
 }
