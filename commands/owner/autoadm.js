@@ -1,4 +1,4 @@
-// ✧ Auto Admin
+// ✧ Auto Admin (Owner Only)
 
 export default {
   name: 'dameadmin',
@@ -9,35 +9,40 @@ export default {
   botAdmin: true,
   owner: true,
 
-  run: async (m, { conn }) => {
+  run: async (m, { client }) => {
     try {
-      let groupMetadata = await conn.groupMetadata(m.chat)
+      const conn = client
 
-      let user = m.sender
-      let bot = conn.user.jid
+      // Obtener metadata del grupo
+      const metadata = await conn.groupMetadata(m.chat)
+
+      const user = m.sender
+      const bot = conn.user.id.split(':')[0] + '@s.whatsapp.net'
 
       // Verificar si ya es admin
-      let isUserAdmin = groupMetadata.participants.find(p => p.id === user)?.admin
+      const isUserAdmin = metadata.participants.find(p => p.id === user)?.admin
       if (isUserAdmin) {
-        return await conn.reply(m.chat, '✧ *Ya eres administrador.*', m)
+        return await conn.sendMessage(m.chat, { text: '✧ *Ya eres administrador.*' }, { quoted: m })
       }
 
       // Verificar si el bot es admin
-      let isBotAdmin = groupMetadata.participants.find(p => p.id === bot)?.admin
+      const isBotAdmin = metadata.participants.find(p => p.id === bot)?.admin
       if (!isBotAdmin) {
-        return await conn.reply(m.chat, '❌ *El bot no es administrador.*', m)
+        return await conn.sendMessage(m.chat, { text: '❌ *El bot no es administrador.*' }, { quoted: m })
       }
 
-      // Dar admin
+      // Promover usuario
       await conn.groupParticipantsUpdate(m.chat, [user], 'promote')
 
+      // Reacción
       if (m.react) await m.react('✅')
 
-      await conn.reply(m.chat, '✧ *Ahora eres administrador.*', m)
+      // Confirmación
+      await conn.sendMessage(m.chat, { text: '✧ *Ahora eres administrador.*' }, { quoted: m })
 
     } catch (e) {
       console.error(e)
-      await conn.reply(m.chat, '✦ Ocurrió un error.', m)
+      await client.sendMessage(m.chat, { text: '✦ Ocurrió un error.' }, { quoted: m })
     }
   }
 }
