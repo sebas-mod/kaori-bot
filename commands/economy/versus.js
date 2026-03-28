@@ -2,9 +2,24 @@ let partidas = global.partidas || (global.partidas = {})
 
 export default {
   command: ['versus'],
-  category: 'freefire',
+  category: 'games',
 
   run: async (client, m, args, usedPrefix) => {
+
+    // ❌ MENSAJE DE AYUDA
+    if (!args[0]) {
+      return m.reply(`❌ Debes ingresar los datos
+
+📌 Uso:
+${usedPrefix}versus tipo cupos hora titulo
+
+📍 Ejemplo:
+${usedPrefix}versus mixto 4 23:00 vs clan pro
+
+🧩 Tipo: masc / fem / mixto
+👥 Cupos: 4 / 6 / 12
+⏰ Hora: formato 24h (ej: 23:00)`)
+    }
 
     let tipo = (args[0] || 'mixto').toLowerCase()
     let cupos = parseInt(args[1]) || 4
@@ -17,6 +32,10 @@ export default {
 
     if (![4, 6, 12].includes(cupos)) {
       return m.reply('❌ Solo 4, 6 o 12 jugadores')
+    }
+
+    if (!hora.includes(':')) {
+      return m.reply(`❌ Hora inválida\nEjemplo: ${usedPrefix}versus mixto 4 23:00 vs clan`)
     }
 
     let horarios = convertirHorarios(hora)
@@ -71,7 +90,7 @@ function convertirHorarios(horaArg) {
 }
 
 
-// 🔥 GENERADOR VISUAL PRO
+// 🔥 LISTA VISUAL
 function generarLista(titulo, tipo, cupos, horarios, creador, jugadores, suplentes) {
 
   let listaJugadores = ''
@@ -108,26 +127,25 @@ ${listaSuplentes}
 }
 
 
-// 🔥 EVENTO GLOBAL (IMPORTANTE)
-// ESTE VA EN EL MISMO ARCHIVO
-
+// 🔥 REACCIONES (FIX REAL)
 export async function before(m, { client }) {
   if (!m.message?.reactionMessage) return
 
-  let id = m.message.reactionMessage.key.id
+  let reaction = m.message.reactionMessage
+  let id = reaction.key.id
   let data = partidas[id]
   if (!data) return
 
   let user = m.sender
-  let reaccion = m.message.reactionMessage.text
+  let emoji = reaction.text || ''
 
-  // ❌ SALIR
-  if (reaccion === '') {
+  let isRemove = !emoji
+
+  if (isRemove) {
 
     if (data.jugadores.includes(user)) {
       data.jugadores = data.jugadores.filter(u => u !== user)
 
-      // subir suplente
       if (data.suplentesList.length > 0) {
         let sube = data.suplentesList.shift()
         data.jugadores.push(sube)
@@ -144,7 +162,6 @@ export async function before(m, { client }) {
 
   } else {
 
-    // ⚠️ ya está
     if (data.jugadores.includes(user) || data.suplentesList.includes(user)) {
       return client.sendMessage(m.chat, {
         text: `⚠️ @${user.split('@')[0]} ya estás`,
@@ -152,11 +169,12 @@ export async function before(m, { client }) {
       })
     }
 
-    // entrar
     if (data.jugadores.length < data.cupos) {
       data.jugadores.push(user)
+
     } else if (data.suplentesList.length < data.suplentes) {
       data.suplentesList.push(user)
+
     } else {
       return client.sendMessage(m.chat, {
         text: `❌ lista llena`
