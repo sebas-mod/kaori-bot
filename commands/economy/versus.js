@@ -6,7 +6,6 @@ export default {
 
   run: async (client, m, args, usedPrefix) => {
 
-    // ❌ MENSAJE DE AYUDA
     if (!args[0]) {
       return m.reply(`❌ Debes ingresar los datos
 
@@ -18,7 +17,7 @@ ${usedPrefix}versus mixto 4 23:00 vs clan pro
 
 🧩 Tipo: masc / fem / mixto
 👥 Cupos: 4 / 6 / 12
-⏰ Hora: formato 24h (ej: 23:00)`)
+⏰ Hora: formato 24h`)
     }
 
     let tipo = (args[0] || 'mixto').toLowerCase()
@@ -27,11 +26,11 @@ ${usedPrefix}versus mixto 4 23:00 vs clan pro
     let titulo = args.slice(3).join(' ') || 'VERSUS FREE FIRE'
 
     if (!['masc', 'fem', 'mixto'].includes(tipo)) {
-      return m.reply('❌ Tipo inválido (masc/fem/mixto)')
+      return m.reply('❌ Tipo inválido')
     }
 
     if (![4, 6, 12].includes(cupos)) {
-      return m.reply('❌ Solo 4, 6 o 12 jugadores')
+      return m.reply('❌ Solo 4, 6 o 12')
     }
 
     if (!hora.includes(':')) {
@@ -90,7 +89,7 @@ function convertirHorarios(horaArg) {
 }
 
 
-// 🔥 LISTA VISUAL
+// 🔥 LISTA
 function generarLista(titulo, tipo, cupos, horarios, creador, jugadores, suplentes) {
 
   let listaJugadores = ''
@@ -122,12 +121,11 @@ ${listaJugadores}
 ${listaSuplentes}
 ╰━━━━━━━━━━━━╯
 
-🔥 Reacciona para entrar
-❌ Quita reacción para salir`
+🔥 Reacciona para entrar/salir`
 }
 
 
-// 🔥 REACCIONES (FIX REAL)
+// 🔥 REACCIONES (TOGGLE REAL)
 export async function before(m, { client }) {
   if (!m.message?.reactionMessage) return
 
@@ -137,13 +135,15 @@ export async function before(m, { client }) {
   if (!data) return
 
   let user = m.sender
-  let emoji = reaction.text || ''
 
-  let isRemove = !emoji
+  let enJugadores = data.jugadores.includes(user)
+  let enSuplentes = data.suplentesList.includes(user)
 
-  if (isRemove) {
+  // 🔁 TOGGLE
+  if (enJugadores || enSuplentes) {
 
-    if (data.jugadores.includes(user)) {
+    // ❌ SALE
+    if (enJugadores) {
       data.jugadores = data.jugadores.filter(u => u !== user)
 
       if (data.suplentesList.length > 0) {
@@ -151,7 +151,7 @@ export async function before(m, { client }) {
         data.jugadores.push(sube)
       }
 
-    } else if (data.suplentesList.includes(user)) {
+    } else if (enSuplentes) {
       data.suplentesList = data.suplentesList.filter(u => u !== user)
     }
 
@@ -162,13 +162,7 @@ export async function before(m, { client }) {
 
   } else {
 
-    if (data.jugadores.includes(user) || data.suplentesList.includes(user)) {
-      return client.sendMessage(m.chat, {
-        text: `⚠️ @${user.split('@')[0]} ya estás`,
-        mentions: [user]
-      })
-    }
-
+    // ✅ ENTRA
     if (data.jugadores.length < data.cupos) {
       data.jugadores.push(user)
 
