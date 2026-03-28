@@ -9,9 +9,14 @@ export default {
   botAdmin: true,
   owner: true,
 
-  run: async (m, { client }) => {
+  run: async (m, ctx) => {
     try {
-      const conn = client
+      // 🔥 Detectar conexión automáticamente
+      const conn = ctx.conn || ctx.client || global.conn
+
+      if (!conn) {
+        return m.reply('❌ Error: conexión no disponible.')
+      }
 
       // Obtener metadata del grupo
       const metadata = await conn.groupMetadata(m.chat)
@@ -22,13 +27,13 @@ export default {
       // Verificar si ya es admin
       const isUserAdmin = metadata.participants.find(p => p.id === user)?.admin
       if (isUserAdmin) {
-        return await conn.sendMessage(m.chat, { text: '✧ *Ya eres administrador.*' }, { quoted: m })
+        return conn.sendMessage(m.chat, { text: '✧ *Ya eres administrador.*' }, { quoted: m })
       }
 
       // Verificar si el bot es admin
       const isBotAdmin = metadata.participants.find(p => p.id === bot)?.admin
       if (!isBotAdmin) {
-        return await conn.sendMessage(m.chat, { text: '❌ *El bot no es administrador.*' }, { quoted: m })
+        return conn.sendMessage(m.chat, { text: '❌ *El bot no es administrador.*' }, { quoted: m })
       }
 
       // Promover usuario
@@ -42,7 +47,7 @@ export default {
 
     } catch (e) {
       console.error(e)
-      await client.sendMessage(m.chat, { text: '✦ Ocurrió un error.' }, { quoted: m })
+      m.reply('✦ Ocurrió un error.')
     }
   }
 }
