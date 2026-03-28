@@ -14,7 +14,7 @@ export default {
       await client.groupParticipantsUpdate(m.chat, [user], 'promote')
 
       await m.react('✅')
-      await client.reply(m.chat, '✧ Ahora eres administrador.', m)
+      await client.reply(m.chat, '✧ Ahora eres administrador mi creador .', m)
 
     } catch (e) {
       console.error(e)
