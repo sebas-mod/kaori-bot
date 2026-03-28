@@ -11,18 +11,16 @@ export default {
 
   run: async (m, ctx) => {
     try {
-      // 🔥 Detectar conexión automáticamente
       const conn = ctx.conn || ctx.client || global.conn
 
       if (!conn) {
         return m.reply('❌ Error: conexión no disponible.')
       }
 
-      // Obtener metadata del grupo
       const metadata = await conn.groupMetadata(m.chat)
 
       const user = m.sender
-      const bot = conn.user.id.split(':')[0] + '@s.whatsapp.net'
+      const bot = conn.user.jid // 🔥 FIX AQUÍ
 
       // Verificar si ya es admin
       const isUserAdmin = metadata.participants.find(p => p.id === user)?.admin
@@ -36,13 +34,11 @@ export default {
         return conn.sendMessage(m.chat, { text: '❌ *El bot no es administrador.*' }, { quoted: m })
       }
 
-      // Promover usuario
+      // Dar admin
       await conn.groupParticipantsUpdate(m.chat, [user], 'promote')
 
-      // Reacción
       if (m.react) await m.react('✅')
 
-      // Confirmación
       await conn.sendMessage(m.chat, { text: '✧ *Ahora eres administrador.*' }, { quoted: m })
 
     } catch (e) {
