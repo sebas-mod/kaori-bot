@@ -74,11 +74,7 @@ export default {
 ${usedPrefix}versus tipo cupos hora titulo
 
 📍 Ejemplo:
-${usedPrefix}versus mixto 4 23:00 vs clan pro
-
-🧩 Tipo: masc / fem / mixto
-👥 Cupos: 4 / 6 / 12
-⏰ Hora: formato 24h`)
+${usedPrefix}versus mixto 4 23:00 vs clan pro`)
     }
 
     let tipo = args[0].toLowerCase()
@@ -131,7 +127,7 @@ ${usedPrefix}versus mixto 4 23:00 vs clan pro
 }
 
 
-// 🔥 HORARIOS (CON VENEZUELA)
+// 🔥 HORARIOS
 function convertirHorarios(horaArg) {
   let [h, m] = horaArg.split(':').map(Number)
 
@@ -151,7 +147,7 @@ function convertirHorarios(horaArg) {
 }
 
 
-// 🔥 LISTA VISUAL PRO
+// 🔥 LISTA
 function generarLista(titulo, tipo, cupos, horarios, creador, jugadores, suplentes) {
 
   let listaJugadores = ''
@@ -183,11 +179,11 @@ ${listaSuplentes}
 ╰━━━━━━━━━━━━╯
 
 🔥 Reacciona para entrar
-❌ Usa ${usedPrefix || '!'}salir para salir`
+❌ Usa !salir para salir`
 }
 
 
-// 🔥 REACCIONES (SOLO ENTRAR)
+// 🔥 REACCIONES
 export async function before(m, { client }) {
   if (!m.message?.reactionMessage) return
 
