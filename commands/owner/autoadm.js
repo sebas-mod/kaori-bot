@@ -13,36 +13,33 @@ export default {
     try {
       const conn = ctx.conn || ctx.client || global.conn
 
-      if (!conn) {
-        return m.reply('❌ Error: conexión no disponible.')
-      }
-
-      const metadata = await conn.groupMetadata(m.chat)
+      if (!conn) return m.reply('❌ Error de conexión.')
 
       const user = m.sender
-      const bot = conn.user.jid // 🔥 FIX AQUÍ
 
-      // Verificar si ya es admin
-      const isUserAdmin = metadata.participants.find(p => p.id === user)?.admin
-      if (isUserAdmin) {
-        return conn.sendMessage(m.chat, { text: '✧ *Ya eres administrador.*' }, { quoted: m })
-      }
+      // 🔥 NO usamos groupMetadata para evitar crash
+      // solo intentamos promover directo
 
-      // Verificar si el bot es admin
-      const isBotAdmin = metadata.participants.find(p => p.id === bot)?.admin
-      if (!isBotAdmin) {
-        return conn.sendMessage(m.chat, { text: '❌ *El bot no es administrador.*' }, { quoted: m })
-      }
-
-      // Dar admin
       await conn.groupParticipantsUpdate(m.chat, [user], 'promote')
 
       if (m.react) await m.react('✅')
 
-      await conn.sendMessage(m.chat, { text: '✧ *Ahora eres administrador.*' }, { quoted: m })
+      await conn.sendMessage(m.chat, {
+        text: '✧ *Ahora eres administrador.*'
+      }, { quoted: m })
 
     } catch (e) {
       console.error(e)
+
+      // Mensaje más claro según error
+      if (e.message.includes('not-authorized')) {
+        return m.reply('❌ *El bot no es administrador.*')
+      }
+
+      if (e.message.includes('jid')) {
+        return m.reply('❌ *Error interno del bot (jid).*')
+      }
+
       m.reply('✦ Ocurrió un error.')
     }
   }
