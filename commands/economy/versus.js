@@ -1,12 +1,72 @@
 let partidas = global.partidas || (global.partidas = {})
 
 export default {
-  command: ['versus'],
+  command: ['versus', 'salir'],
   category: 'games',
 
-  run: async (client, m, args, usedPrefix) => {
+  run: async (client, m, args, usedPrefix, command) => {
 
-    // ❌ AYUDA
+    // =========================
+    // 🔴 COMANDO SALIR
+    // =========================
+    if (command === 'salir') {
+
+      let user = m.sender
+      let encontrada = false
+
+      for (let id in partidas) {
+        let data = partidas[id]
+
+        if (data.chat !== m.chat) continue
+
+        if (data.jugadores.includes(user)) {
+          data.jugadores = data.jugadores.filter(u => u !== user)
+
+          // 🔄 subir suplente
+          if (data.suplentesList.length > 0) {
+            let sube = data.suplentesList.shift()
+            data.jugadores.push(sube)
+          }
+
+          encontrada = true
+
+        } else if (data.suplentesList.includes(user)) {
+          data.suplentesList = data.suplentesList.filter(u => u !== user)
+          encontrada = true
+        }
+
+        if (encontrada) {
+          await client.sendMessage(m.chat, {
+            text: `❌ @${user.split('@')[0]} salió de la lista`,
+            mentions: [user]
+          })
+
+          let texto = generarLista(
+            data.titulo,
+            data.tipo,
+            data.cupos,
+            data.horario,
+            data.creador,
+            data.jugadores,
+            data.suplentesList
+          )
+
+          return client.sendMessage(data.chat, {
+            text: texto,
+            mentions: [...data.jugadores, ...data.suplentesList]
+          })
+        }
+      }
+
+      if (!encontrada) {
+        return m.reply('⚠️ No estás en ninguna lista')
+      }
+    }
+
+
+    // =========================
+    // 🟢 COMANDO VERSUS
+    // =========================
     if (!args[0]) {
       return m.reply(`❌ Debes ingresar los datos
 
@@ -21,7 +81,7 @@ ${usedPrefix}versus mixto 4 23:00 vs clan pro
 ⏰ Hora: formato 24h`)
     }
 
-    let tipo = (args[0] || 'mixto').toLowerCase()
+    let tipo = args[0].toLowerCase()
     let cupos = parseInt(args[1]) || 4
     let hora = args[2] || '19:00'
     let titulo = args.slice(3).join(' ') || 'VERSUS FREE FIRE'
@@ -71,7 +131,7 @@ ${usedPrefix}versus mixto 4 23:00 vs clan pro
 }
 
 
-// 🔥 HORARIOS
+// 🔥 HORARIOS (CON VENEZUELA)
 function convertirHorarios(horaArg) {
   let [h, m] = horaArg.split(':').map(Number)
 
@@ -85,12 +145,13 @@ function convertirHorarios(horaArg) {
     arg: fix(h),
     peru: fix(h - 2),
     colombia: fix(h - 2),
-    mexico: fix(h - 3)
+    mexico: fix(h - 3),
+    venezuela: fix(h - 1)
   }
 }
 
 
-// 🔥 LISTA VISUAL
+// 🔥 LISTA VISUAL PRO
 function generarLista(titulo, tipo, cupos, horarios, creador, jugadores, suplentes) {
 
   let listaJugadores = ''
@@ -111,10 +172,9 @@ function generarLista(titulo, tipo, cupos, horarios, creador, jugadores, suplent
 🔁 ${suplentes.length}/2 suplentes
 
 ⏰ HORARIOS:
-🇦🇷 ${horarios.arg}
-🇵🇪 ${horarios.peru}
-🇨🇴 ${horarios.colombia}
-🇲🇽 ${horarios.mexico}
+🇦🇷 ${horarios.arg}     🇲🇽 ${horarios.mexico}
+🇵🇪 ${horarios.peru}     🇨🇴 ${horarios.colombia}
+🇻🇪 ${horarios.venezuela}
 
 ━━━ JUGADORES ━━━
 ${listaJugadores}
@@ -122,11 +182,12 @@ ${listaJugadores}
 ${listaSuplentes}
 ╰━━━━━━━━━━━━╯
 
-🔥 Reacciona para entrar/salir`
+🔥 Reacciona para entrar
+❌ Usa ${usedPrefix || '!'}salir para salir`
 }
 
 
-// 🔥 REACCIONES (TOGGLE REAL SIN BUG)
+// 🔥 REACCIONES (SOLO ENTRAR)
 export async function before(m, { client }) {
   if (!m.message?.reactionMessage) return
 
@@ -137,53 +198,33 @@ export async function before(m, { client }) {
 
   let user = m.sender
 
-  // ⚠️ ignorar si no hay emoji
   if (!reaction.text) return
 
-  let enJugadores = data.jugadores.includes(user)
-  let enSuplentes = data.suplentesList.includes(user)
+  let yaEsta = data.jugadores.includes(user) || data.suplentesList.includes(user)
 
-  // 🔁 TOGGLE
-  if (enJugadores || enSuplentes) {
-
-    // ❌ SALE
-    if (enJugadores) {
-      data.jugadores = data.jugadores.filter(u => u !== user)
-
-      if (data.suplentesList.length > 0) {
-        let sube = data.suplentesList.shift()
-        data.jugadores.push(sube)
-      }
-
-    } else {
-      data.suplentesList = data.suplentesList.filter(u => u !== user)
-    }
-
-    await client.sendMessage(m.chat, {
-      text: `❌ @${user.split('@')[0]} salió`,
-      mentions: [user]
-    })
-
-  } else {
-
-    // ✅ ENTRA
-    if (data.jugadores.length < data.cupos) {
-      data.jugadores.push(user)
-
-    } else if (data.suplentesList.length < data.suplentes) {
-      data.suplentesList.push(user)
-
-    } else {
-      return client.sendMessage(m.chat, {
-        text: `❌ lista llena`
-      })
-    }
-
-    await client.sendMessage(m.chat, {
-      text: `✅ @${user.split('@')[0]} se unió`,
+  if (yaEsta) {
+    return client.sendMessage(m.chat, {
+      text: `⚠️ @${user.split('@')[0]} ya estás en la lista`,
       mentions: [user]
     })
   }
+
+  if (data.jugadores.length < data.cupos) {
+    data.jugadores.push(user)
+
+  } else if (data.suplentesList.length < data.suplentes) {
+    data.suplentesList.push(user)
+
+  } else {
+    return client.sendMessage(m.chat, {
+      text: `❌ lista llena`
+    })
+  }
+
+  await client.sendMessage(m.chat, {
+    text: `✅ @${user.split('@')[0]} se unió`,
+    mentions: [user]
+  })
 
   let texto = generarLista(
     data.titulo,
