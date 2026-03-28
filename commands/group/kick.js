@@ -64,27 +64,24 @@ export default {
 
 
 // =========================
-// 🔥 STICKER KICK (EXTRA)
+// 🔥 STICKER KICK (FIX REAL)
 // =========================
 export async function before(m, { client }) {
 
   if (!m.message?.stickerMessage) return
+  if (!m.isGroup) return
 
-  // 🔥 TU STICKER (ARRAY REAL)
-  const stickerAdmin = [
-    142,58,27,1,229,56,29,57,97,161,239,245,41,75,168,82,
-    23,233,47,18,77,117,253,81,179,95,255,227,130,152,248,78
-  ]
+  // 🔥 TU HASH REAL (STRING)
+  const stickerAdmin = "142,58,27,1,229,56,29,57,97,161,239,245,41,75,168,82,23,233,47,18,77,117,253,81,179,95,255,227,130,152,248,78"
 
   let fileSha = m.message.stickerMessage.fileSha256
 
-  // comparar arrays
-  let match = fileSha.length === stickerAdmin.length &&
-    fileSha.every((v, i) => v === stickerAdmin[i])
+  // 🔥 convertir a string
+  let hash = Array.from(fileSha).join(',')
 
-  if (!match) return
-  if (!m.isGroup) return
+  if (hash !== stickerAdmin) return
 
+  // 🔒 verificar admin
   let groupInfo = await client.groupMetadata(m.chat)
   let participants = groupInfo.participants
 
@@ -95,6 +92,7 @@ export async function before(m, { client }) {
 
   if (!isAdmin) return m.reply("❌ Solo admins pueden usar este sticker")
 
+  // 👇 usuario objetivo
   let user
 
   if (m.mentionedJid?.[0]) {
@@ -130,6 +128,6 @@ export async function before(m, { client }) {
 
   } catch (e) {
     console.log(e)
-    m.reply("❌ Error al eliminar")
+    m.reply("❌ Error al eliminar (soy admin?)")
   }
 }
