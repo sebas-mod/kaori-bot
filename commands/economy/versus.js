@@ -22,7 +22,6 @@ export default {
         if (data.jugadores.includes(user)) {
           data.jugadores = data.jugadores.filter(u => u !== user)
 
-          // 🔄 subir suplente
           if (data.suplentesList.length > 0) {
             let sube = data.suplentesList.shift()
             data.jugadores.push(sube)
@@ -183,8 +182,18 @@ ${listaSuplentes}
 }
 
 
-// 🔥 REACCIONES
+// 🔥 BEFORE (REACCIONES + DEBUG STICKER)
 export async function before(m, { client }) {
+
+  // 🔍 DEBUG STICKER (IMPORTANTE)
+  if (m.message?.stickerMessage) {
+    console.log(
+      "STICKER HASH:",
+      m.message.stickerMessage.fileSha256.toString('base64')
+    )
+  }
+
+  // 🔥 REACCIONES
   if (!m.message?.reactionMessage) return
 
   let reaction = m.message.reactionMessage
