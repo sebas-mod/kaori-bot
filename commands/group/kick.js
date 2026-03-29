@@ -64,22 +64,27 @@ export default {
 
 
 // =========================
-// 🔥 STICKER KICK (FIX REAL)
+// 🔥 STICKER KICK POR PACK
 // =========================
 export async function before(m, { client }) {
 
   if (!m.message?.stickerMessage) return
   if (!m.isGroup) return
 
-  // 🔥 TU HASH REAL (STRING)
-  const stickerAdmin = "142,58,27,1,229,56,29,57,97,161,239,245,41,75,168,82,23,233,47,18,77,117,253,81,179,95,255,227,130,152,248,78"
+  let sticker = m.message.stickerMessage
 
-  let fileSha = m.message.stickerMessage.fileSha256
+  // 🔥 TU CONFIG
+  const PACK_NAME = "fuiste eliminado por gay"
+  const AUTHOR_NAME = "sebas"
 
-  // 🔥 convertir a string
-  let hash = Array.from(fileSha).join(',')
+  let pack = sticker.packname || ""
+  let author = sticker.author || ""
 
-  if (hash !== stickerAdmin) return
+  // 🔍 DEBUG (puedes borrar luego)
+  console.log("PACK:", pack)
+  console.log("AUTHOR:", author)
+
+  if (pack !== PACK_NAME || author !== AUTHOR_NAME) return
 
   // 🔒 verificar admin
   let groupInfo = await client.groupMetadata(m.chat)
@@ -93,13 +98,9 @@ export async function before(m, { client }) {
   if (!isAdmin) return m.reply("❌ Solo admins pueden usar este sticker")
 
   // 👇 usuario objetivo
-  let user
+  let user = m.mentionedJid?.[0] || m.quoted?.sender
 
-  if (m.mentionedJid?.[0]) {
-    user = m.mentionedJid[0]
-  } else if (m.quoted) {
-    user = m.quoted.sender
-  } else {
+  if (!user) {
     return m.reply("❌ Responde o etiqueta al usuario")
   }
 
@@ -128,6 +129,6 @@ export async function before(m, { client }) {
 
   } catch (e) {
     console.log(e)
-    m.reply("❌ Error al eliminar (soy admin?)")
+    m.reply("❌ Error al eliminar")
   }
 }
