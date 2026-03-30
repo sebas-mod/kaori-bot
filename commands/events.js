@@ -11,7 +11,18 @@ export default async (client, m) => {
     try {
       const metadata = await client.groupMetadata(anu.id).catch(() => null)
       const groupAdmins = metadata?.participants.filter(p => (p.admin === 'admin' || p.admin === 'superadmin')) || []
-      const chat = global?.db?.data?.chats?.[anu.id] || {} // 🔥 FIX
+      
+      // ✅ Inicializar chat correctamente
+      if (!global.db.data.chats[anu.id]) {
+        global.db.data.chats[anu.id] = {
+          welcome: false,
+          goodbye: false,
+          alerts: false
+        }
+      }
+
+      const chat = global.db.data.chats[anu.id]
+
       const botId = client.user.id.split(':')[0] + '@s.whatsapp.net'
       const memberCount = metadata.participants.length      
       const isSelf = global.db.data.settings[botId]?.self ?? false
@@ -22,9 +33,9 @@ export default async (client, m) => {
         const phone = p.phoneNumber?.split('@')[0] || jid.split('@')[0]
 
         const mensajes = {
-          add: chat?.sWelcome ? `\n┊➤ ${chat.sWelcome.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : '',
-          remove: chat?.sGoodbye ? `\n┊➤ ${chat.sGoodbye.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : '',
-          leave: chat?.sGoodbye ? `\n┊➤ ${chat.sGoodbye.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : ''
+          add: chat.sWelcome ? `\n┊➤ ${chat.sWelcome.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : '',
+          remove: chat.sGoodbye ? `\n┊➤ ${chat.sGoodbye.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : '',
+          leave: chat.sGoodbye ? `\n┊➤ ${chat.sGoodbye.replace(/{usuario}/g, `@${phone}`).replace(/{grupo}/g, `*${metadata.subject}*`).replace(/{desc}/g, metadata?.desc || '✿ Sin Desc ✿')}` : ''
         }
 
         const fakeContext = {
@@ -48,8 +59,8 @@ export default async (client, m) => {
           }
         }
 
-        // ✨ WELCOME (SIN BLOQUEOS)
-        if (anu.action === 'add') {
+        // ✅ WELCOME (AHORA SÍ RESPETA ON/OFF)
+        if (anu.action === 'add' && chat.welcome === true) {
           const caption = `╭┈──̇─̇─̇────̇─̇─̇──◯◝
 ┊「 *Bienvenido (⁠ ⁠ꈍ⁠ᴗ⁠ꈍ⁠)* 」
 ┊︶︶︶︶︶︶︶︶︶︶︶
@@ -61,14 +72,12 @@ export default async (client, m) => {
 ┊ ︿︿︿︿︿︿︿︿︿︿︿
 ╰─────────────────╯`
 
-          // 📸 Banner
           await client.sendMessage(anu.id, { 
             image: { url: bannerURL }, 
             caption, 
             ...fakeContext 
           })
 
-          // 🔊 Audio
           setTimeout(async () => {
             await client.sendMessage(anu.id, {
               audio: { url: audioURL },
@@ -78,8 +87,8 @@ export default async (client, m) => {
           }, 1000)
         }
 
-        // ✨ DESPEDIDA (SIN AUDIO)
-        if (anu.action === 'remove' || anu.action === 'leave') {
+        // ✅ DESPEDIDA (AHORA SÍ RESPETA ON/OFF)
+        if ((anu.action === 'remove' || anu.action === 'leave') && chat.goodbye === true) {
           const caption = `╭┈──̇─̇─̇────̇─̇─̇──◯◝
 ┊「 *Hasta pronto (⁠╥⁠﹏⁠╥⁠)* 」
 ┊︶︶︶︶︶︶︶︶︶︶︶
@@ -98,8 +107,8 @@ export default async (client, m) => {
           })
         }
 
-        // ALERTAS
-        if (anu.action === 'promote' && chat?.alerts) {
+        // ✅ ALERTAS (ya estaba bien)
+        if (anu.action === 'promote' && chat.alerts === true) {
           const usuario = anu.author
           await client.sendMessage(anu.id, { 
             text: `「✎」 *@${phone}* ha sido promovido por *@${usuario.split('@')[0]}.*`, 
@@ -107,7 +116,7 @@ export default async (client, m) => {
           })
         }
 
-        if (anu.action === 'demote' && chat?.alerts) {
+        if (anu.action === 'demote' && chat.alerts === true) {
           const usuario = anu.author
           await client.sendMessage(anu.id, { 
             text: `「✎」 *@${phone}* ha sido degradado por *@${usuario.split('@')[0]}.*`, 
