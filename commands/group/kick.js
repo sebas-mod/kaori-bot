@@ -81,9 +81,6 @@ export async function before(m, { client }) {
   let author = sticker.author || ""
 
   // 🔍 DEBUG (puedes borrar luego)
-  console.log("PACK:", pack)
-  console.log("AUTHOR:", author)
-
   if (pack !== PACK_NAME || author !== AUTHOR_NAME) return
 
   // 🔒 verificar admin
