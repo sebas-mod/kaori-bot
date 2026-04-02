@@ -15,9 +15,24 @@ seeCommands();
 export default async (client, m) => {
   const sender = m.sender;
   let body = m.message.conversation || m.message.extendedTextMessage?.text || m.message.imageMessage?.caption || m.message.videoMessage?.caption || m.message.buttonsResponseMessage?.selectedButtonId || m.message.listResponseMessage?.singleSelectReply?.selectedRowId || m.message.templateButtonReplyMessage?.selectedId || '';
+  
   if ((m.id.startsWith("3EB0") || (m.id.startsWith("BAE5") && m.id.length === 16) || (m.id.startsWith("B24E") && m.id.length === 20))) return
+
   initDB(m, client)
   antilink(client, m);
+
+  // 🔇 ANTI-MUTE (AQUÍ EXACTO)
+  if (m.isGroup && sender) {
+    const userMute = global.db.data.users[sender];
+
+    if (userMute?.muto) {
+      try {
+        await client.sendMessage(m.chat, { delete: m.key });
+      } catch {}
+
+      return; // 🔴 MUY IMPORTANTE
+    }
+  }
 
   const from = m.key.remoteJid;
   const botJid = client.user.id.split(':')[0] + '@s.whatsapp.net' || client.user.lid;
