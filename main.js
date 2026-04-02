@@ -21,8 +21,7 @@ export default async (client, m) => {
   initDB(m, client)
   antilink(client, m);
 
- // 🔇 ANTI-MUTE TEST
-// 🔇 ANTI-MUTE FINAL
+// 🔇 ANTI-MUTE FINAL (CORREGIDO)
 if (m.isGroup) {
   const senderId = m.key.participant || m.sender;
 
@@ -33,13 +32,18 @@ if (m.isGroup) {
 
     try {
       await client.sendMessage(m.chat, {
-        delete: m.key
+        delete: {
+          remoteJid: m.chat,
+          fromMe: false,
+          id: m.key.id,
+          participant: senderId
+        }
       });
     } catch (e) {
-      console.log('ERROR BORRANDO:', e);
+      console.log('ERROR AL BORRAR:', e);
     }
 
-    return;
+    return; // 🔴 IMPORTANTE
   }
 }
 
