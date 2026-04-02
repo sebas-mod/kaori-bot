@@ -1,7 +1,7 @@
 export default {
-  name: 'anti-mute-system',
+  name: 'anti-mute',
 
-  all: async function (m, { client }) {
+  before: async function (m, { client }) {
     try {
       if (!m.isGroup) return;
 
@@ -12,9 +12,15 @@ export default {
         console.log('MUTE DETECTADO:', sender);
 
         await client.sendMessage(m.chat, {
-          delete: m.key
+          delete: {
+            remoteJid: m.chat,
+            fromMe: false,
+            id: m.key.id,
+            participant: sender
+          }
         });
 
+        return true; // 🔴 corta ejecución de comandos
       }
 
     } catch (e) {
