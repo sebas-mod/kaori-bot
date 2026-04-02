@@ -21,26 +21,6 @@ export default async (client, m) => {
   initDB(m, client)
   antilink(client, m);
 
-// 🔇 ANTI-MUTE DEFINITIVO
-if (m.isGroup) {
-  const senderId = m.sender; // 👈 usamos SOLO este
-
-  const userMute = global.db.data.users[senderId];
-
-  if (userMute?.muto) {
-    console.log('MUTE DETECTADO:', senderId);
-
-    try {
-      await client.sendMessage(m.chat, {
-        delete: m.key
-      });
-    } catch (e) {
-      console.log('ERROR:', e);
-    }
-
-    return;
-  }
-}
   const from = m.key.remoteJid;
   const botJid = client.user.id.split(':')[0] + '@s.whatsapp.net' || client.user.lid;
   const chat = global.db.data.chats[m.chat] || {}
@@ -117,6 +97,30 @@ if (m.isGroup) {
   }
 
   if (!match) return;
+  // 🔇 ANTI-MUTE DEFINITIVO
+if (m.isGroup) {
+  const senderId = m.sender;
+  const userMute = global.db.data.users[senderId];
+
+  if (userMute?.muto) {
+    console.log('MUTE DETECTADO:', senderId);
+
+    try {
+      await client.sendMessage(m.chat, {
+        delete: {
+          remoteJid: m.chat,
+          fromMe: false,
+          id: m.key.id,
+          participant: senderId
+        }
+      });
+    } catch (e) {
+      console.log('ERROR BORRANDO:', e);
+    }
+
+    return;
+  }
+}
   let usedPrefix = (match[0] || [])[0] || '';
   let args = m.text.slice(usedPrefix.length).trim().split(" ");
   let command = (args.shift() || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
