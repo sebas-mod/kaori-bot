@@ -21,18 +21,19 @@ export default async (client, m) => {
   initDB(m, client)
   antilink(client, m);
 
-  // 🔇 ANTI-MUTE (AQUÍ EXACTO)
-  if (m.isGroup && sender) {
-    const userMute = global.db.data.users[sender];
+ // 🔇 ANTI-MUTE TEST
+if (m.isGroup && sender) {
+  const userMute = global.db.data.users[sender];
 
-    if (userMute?.muto) {
-      try {
-        await client.sendMessage(m.chat, { delete: m.key });
-      } catch {}
+  if (userMute?.muto) {
+    console.log('MUTE DETECTADO:', sender); // 👈 prueba
+    try {
+      await client.sendMessage(m.chat, { delete: m.key });
+    } catch {}
 
-      return; // 🔴 MUY IMPORTANTE
-    }
+    return;
   }
+}
 
   const from = m.key.remoteJid;
   const botJid = client.user.id.split(':')[0] + '@s.whatsapp.net' || client.user.lid;
