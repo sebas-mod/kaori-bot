@@ -22,14 +22,22 @@ export default async (client, m) => {
   antilink(client, m);
 
  // 🔇 ANTI-MUTE TEST
-if (m.isGroup && sender) {
-  const userMute = global.db.data.users[sender];
+// 🔇 ANTI-MUTE FINAL
+if (m.isGroup) {
+  const senderId = m.key.participant || m.sender;
+
+  const userMute = global.db.data.users[senderId];
 
   if (userMute?.muto) {
-    console.log('MUTE DETECTADO:', sender); // 👈 prueba
+    console.log('MUTE DETECTADO:', senderId);
+
     try {
-      await client.sendMessage(m.chat, { delete: m.key });
-    } catch {}
+      await client.sendMessage(m.chat, {
+        delete: m.key
+      });
+    } catch (e) {
+      console.log('ERROR BORRANDO:', e);
+    }
 
     return;
   }
