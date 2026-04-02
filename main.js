@@ -97,30 +97,6 @@ export default async (client, m) => {
   }
 
   if (!match) return;
-  // 🔇 ANTI-MUTE DEFINITIVO
-if (m.isGroup) {
-  const senderId = m.sender;
-  const userMute = global.db.data.users[senderId];
-
-  if (userMute?.muto) {
-    console.log('MUTE DETECTADO:', senderId);
-
-    try {
-      await client.sendMessage(m.chat, {
-        delete: {
-          remoteJid: m.chat,
-          fromMe: false,
-          id: m.key.id,
-          participant: senderId
-        }
-      });
-    } catch (e) {
-      console.log('ERROR BORRANDO:', e);
-    }
-
-    return;
-  }
-}
   let usedPrefix = (match[0] || [])[0] || '';
   let args = m.text.slice(usedPrefix.length).trim().split(" ");
   let command = (args.shift() || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
