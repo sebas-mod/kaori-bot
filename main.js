@@ -21,9 +21,9 @@ export default async (client, m) => {
   initDB(m, client)
   antilink(client, m);
 
-// 🔇 ANTI-MUTE FINAL (CORREGIDO)
+// 🔇 ANTI-MUTE DEFINITIVO
 if (m.isGroup) {
-  const senderId = m.key.participant || m.sender;
+  const senderId = m.sender; // 👈 usamos SOLO este
 
   const userMute = global.db.data.users[senderId];
 
@@ -32,21 +32,15 @@ if (m.isGroup) {
 
     try {
       await client.sendMessage(m.chat, {
-        delete: {
-          remoteJid: m.chat,
-          fromMe: false,
-          id: m.key.id,
-          participant: senderId
-        }
+        delete: m.key
       });
     } catch (e) {
-      console.log('ERROR AL BORRAR:', e);
+      console.log('ERROR:', e);
     }
 
-    return; // 🔴 IMPORTANTE
+    return;
   }
 }
-
   const from = m.key.remoteJid;
   const botJid = client.user.id.split(':')[0] + '@s.whatsapp.net' || client.user.lid;
   const chat = global.db.data.chats[m.chat] || {}
