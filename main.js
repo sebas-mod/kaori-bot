@@ -192,23 +192,5 @@ export default async (client, m) => {
   } catch (error) {
     await client.sendMessage(m.chat, { text: `《✧》 Error al ejecutar el comando\n${error}` }, { quoted: m });
   }
-  // 🔇 ANTI-MUTE FINAL (TU BOT)
-let utente = global.db.data.users[m.sender];
-
-if (utente?.muto === true) {
-  let bang = m.key.id;
-  let cancellazzione = m.key.participant || m.sender;
-
-  await client.sendMessage(m.chat, { 
-    delete: { 
-      remoteJid: m.chat, 
-      fromMe: false, 
-      id: bang, 
-      participant: cancellazzione 
-    }
-  });
-
-  return;
-}
 level(m);
 };
