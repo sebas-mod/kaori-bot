@@ -20,29 +20,7 @@ export default async (client, m) => {
 
   initDB(m, client)
   antilink(client, m);
-  
-  // 🔇 ANTI-MUTE GLOBAL (SOLUCIÓN REAL)
-if (m.isGroup) {
-  let utente = global.db.data.users[m.sender];
-
-  if (utente?.muto === true) {
-    let bang = m.key.id;
-    let cancellazzione = m.key.participant || m.sender;
-
-    await client.sendMessage(m.chat, { 
-      delete: { 
-        remoteJid: m.chat, 
-        fromMe: false, 
-        id: bang, 
-        participant: cancellazzione 
-      }
-    });
-
-    return;
-  }
 } 
-
-  
   const from = m.key.remoteJid;
   const botJid = client.user.id.split(':')[0] + '@s.whatsapp.net' || client.user.lid;
   const chat = global.db.data.chats[m.chat] || {}
