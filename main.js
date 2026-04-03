@@ -192,24 +192,5 @@ export default async (client, m) => {
   } catch (error) {
     await client.sendMessage(m.chat, { text: `《✧》 Error al ejecutar el comando\n${error}` }, { quoted: m });
   }
- // 🔇 ANTI-MUTE (AQUÍ ABAJO DEL TODO)
-let userMute = global.db.data.users[m.sender];
-
-if (userMute?.muto === true) {
-  let msgId = m.key.id;
-  let participant = m.key.participant || m.sender;
-
-  await client.sendMessage(m.chat, {
-    delete: {
-      remoteJid: m.chat,
-      fromMe: false,
-      id: msgId,
-      participant: participant
-    }
-  });
-
-  return;
-}
-
 level(m);
 };
