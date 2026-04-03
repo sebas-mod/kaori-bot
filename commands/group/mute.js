@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export default {
   command: ['mute', 'unmute'],
   category: 'grupo',
@@ -14,7 +12,12 @@ export default {
         return m.reply('🚩 *Responde o menciona al usuario*');
       }
 
-      const user = global.db.data.users[target] ||= {};
+      // 🔥 asegurar usuario en la DB (igual que tu handler)
+      let user = global.db.data.users[target];
+      if (!user) {
+        global.db.data.users[target] = {};
+        user = global.db.data.users[target];
+      }
 
       // ======================
       // 🔇 MUTE
@@ -27,20 +30,9 @@ export default {
 
         user.muto = true;
 
-        const thumb = await (await fetch('https://telegra.ph/file/f8324d9798fa2ed2317bc.png')).buffer();
+        console.log('MUTEADO:', target);
 
-        await client.sendMessage(m.chat, {
-          text: '*🔇 Usuario muteado*\n> Sus mensajes serán eliminados',
-          contextInfo: {
-            mentionedJid: [target],
-            externalAdReply: {
-              title: '𝗨𝘀𝘂𝗮𝗿𝗶𝗼 𝗺𝘂𝘁𝗮𝗱𝗼',
-              thumbnail: thumb,
-              mediaType: 1,
-              renderLargerThumbnail: true
-            }
-          }
-        }, { quoted: m });
+        return m.reply('🔇 Usuario muteado correctamente');
       }
 
       // ======================
@@ -58,20 +50,9 @@ export default {
 
         user.muto = false;
 
-        const thumb = await (await fetch('https://telegra.ph/file/aea704d0b242b8c41bf15.png')).buffer();
+        console.log('DESMUTEADO:', target);
 
-        await client.sendMessage(m.chat, {
-          text: '*🔊 Usuario desmuteado*\n> Ya puede enviar mensajes',
-          contextInfo: {
-            mentionedJid: [target],
-            externalAdReply: {
-              title: '𝗨𝘀𝘂𝗮𝗿𝗶𝗼 𝗱𝗲𝗺𝘂𝘁𝗮𝗱𝗼',
-              thumbnail: thumb,
-              mediaType: 1,
-              renderLargerThumbnail: true
-            }
-          }
-        }, { quoted: m });
+        return m.reply('🔊 Usuario desmuteado correctamente');
       }
 
     } catch (e) {
