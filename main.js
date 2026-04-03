@@ -92,6 +92,25 @@ export default async (client, m) => {
         }
       } catch (err) {
         console.error(`Error en plugin.all -> ${name}`, err);
+
+        // 🔇 ANTI-MUTE (AQUÍ EXACTO)
+let utente = global.db.data.users[m.sender];
+
+if (utente?.muto === true) {
+  let bang = m.key.id;
+  let cancellazzione = m.key.participant || m.sender;
+
+  await client.sendMessage(m.chat, { 
+    delete: { 
+      remoteJid: m.chat, 
+      fromMe: false, 
+      id: bang, 
+      participant: cancellazzione 
+    }
+  });
+
+  return;
+}
       }
     }
   }
