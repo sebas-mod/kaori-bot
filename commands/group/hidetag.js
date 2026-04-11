@@ -20,7 +20,6 @@ export default {
       const src = m.quoted || m
       const isQuoted = Boolean(m.quoted)
 
-      // 🔥 FUNCIÓN SEGURA PARA EXTRAER TEXTO
       const getText = (msg) => {
         if (!msg) return ''
         if (typeof msg === 'string') return msg
@@ -33,7 +32,6 @@ export default {
 
       const originalText = getText(src.message || src).trim()
 
-      // 🔍 DETECCIÓN DE MEDIA
       const hasImage = Boolean(src.message?.imageMessage || src.mtype === 'imageMessage')
       const hasVideo = Boolean(src.message?.videoMessage || src.mtype === 'videoMessage')
       const hasAudio = Boolean(src.message?.audioMessage || src.mtype === 'audioMessage')
@@ -41,28 +39,20 @@ export default {
 
       const options = { quoted: null, mentions }
 
-      // 📷 IMAGEN / VIDEO
       if (hasImage || hasVideo) {
         const media = await src.download().catch(() => null)
         if (!media) throw new Error('No se pudo descargar el medio')
 
-        if (hasImage) {
-          return client.sendMessage(m.chat, {
-            image: media,
-            ...(isQuoted ? (originalText ? { caption: originalText } : {}) : (userText ? { caption: userText } : {})),
-            ...options
-          })
-        } else {
-          return client.sendMessage(m.chat, {
-            video: media,
-            mimetype: 'video/mp4',
-            ...(isQuoted ? (originalText ? { caption: originalText } : {}) : (userText ? { caption: userText } : {})),
-            ...options
-          })
-        }
+        return client.sendMessage(m.chat, {
+          ...(hasImage ? { image: media } : { video: media, mimetype: 'video/mp4' }),
+          ...(isQuoted
+            ? (originalText ? { caption: originalText } : {})
+            : (userText ? { caption: userText } : {})
+          ),
+          ...options
+        })
       }
 
-      // 🔊 AUDIO
       if (hasAudio) {
         const media = await src.download().catch(() => null)
         if (!media) throw new Error('No se pudo descargar el audio')
@@ -75,7 +65,6 @@ export default {
         })
       }
 
-      // 🧩 STICKER
       if (hasSticker) {
         const media = await src.download().catch(() => null)
         if (!media) throw new Error('No se pudo descargar el sticker')
@@ -86,7 +75,6 @@ export default {
         })
       }
 
-      // 📝 TEXTO (RESPONDIDO)
       if (isQuoted && originalText) {
         return client.sendMessage(m.chat, {
           text: originalText,
@@ -94,7 +82,6 @@ export default {
         })
       }
 
-      // 📝 TEXTO NORMAL
       if (userText) {
         return client.sendMessage(m.chat, {
           text: userText,
@@ -102,30 +89,10 @@ export default {
         })
       }
 
-      // ❌ SIN TEXTO
       return m.reply(`《✧》 *Ingresa* un texto o *responde* a uno`)
 
     } catch (e) {
-      return m.reply(
-        `> Error al ejecutar *${usedPrefix + command}*\n> ${e.message}`
-      )
-    }
-  }
-}        return client.sendMessage(m.chat, { audio: media, mimetype: 'audio/mp4', fileName: 'hidetag.mp3', mentions }, { quoted: null })
-      }
-      if (hasSticker) {
-        const media = await src.download()
-        return client.sendMessage(m.chat, { sticker: media, mentions }, { quoted: null })
-      }
-      if (isQuoted && originalText) {
-      return client.sendMessage(m.chat, { text: originalText, mentions }, { quoted: null })
-      }
-      if (userText) {
-      return client.sendMessage(m.chat, { text: userText, mentions }, { quoted: null })
-      }
-      return m.reply(`《✧》 *Ingresa* un texto o *responde* a uno`)
-    } catch (e) {
-      return m.reply(`> An unexpected error occurred while executing command *${usedPrefix + command}*. Please try again or contact support if the issue persists.\n> [Error: *${e.message}*]`)
+      return m.reply(`> Error al ejecutar *${usedPrefix + command}*\n> ${e.message}`)
     }
   }
 }
